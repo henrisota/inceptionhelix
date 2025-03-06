@@ -16,7 +16,6 @@ with pkgs; let
     delve
     # Nix
     alejandra
-    nixfmt-classic
   ];
 
   languageServers = [
