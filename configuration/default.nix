@@ -282,7 +282,9 @@
             o = ":buffer-close-others!";
           };
 
+          F = ":format";
           Q = ":quit!";
+          R = ":reload-all";
           W = ":write!";
         };
 
