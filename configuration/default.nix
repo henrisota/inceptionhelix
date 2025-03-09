@@ -71,7 +71,7 @@
     statusline = {
       left = ["mode" "separator" "version-control" "separator" "file-name" "separator" "spinner" "separator" "diagnostics"];
       center = [];
-      right = ["selections" "file-encoding" "file-line-ending" "file-type" "position"];
+      right = ["selections" "position" "file-encoding" "file-line-ending" "file-type"];
       separator = " ";
       mode = {
         normal = "NORMAL";
@@ -92,6 +92,7 @@
 
     indent-guides = {
       character = "▏";
+      rainbow-option = "none";
       render = true;
       skip-levels = 1;
     };
@@ -135,34 +136,14 @@
   };
 
   keys = let
-    navigationBindings = let
-      trimSelections = keybind: [keybind "trim_selections"];
-    in
-      type: {
-        w = "${type}_next_word_start";
-        W = "${type}_next_long_word_start";
+    commonBindings = {
+      esc = ["collapse_selection" "keep_primary_selection"];
+    };
 
-        e = trimSelections "${type}_next_word_end";
-        E = trimSelections "${type}_next_long_word_end";
-
-        b =
-          if type == "move"
-          then trimSelections "${type}_prev_word_start"
-          else "${type}_prev_word_start";
-        B =
-          if type == "move"
-          then trimSelections "${type}_prev_long_word_start"
-          else "${type}_prev_long_word_start";
-
-        tab = "${type}_parent_node_end";
-        S-tab = "${type}_parent_node_start";
-      };
-
-    arrowBindings = type: {
-      up = "${type}_line_up";
-      down = "${type}_line_down";
-      left = "${type}_char_left";
-      right = "${type}_char_right";
+    navigationBindings = {
+      "0" = "goto_line_start";
+      "$" = "goto_line_end";
+      "^" = "goto_first_nonwhitespace";
     };
 
     disableModelessNavigationBindings = {
@@ -209,118 +190,169 @@
       ];
     };
   in {
-    normal =
-      (navigationBindings "move")
-      // moveLineBindings
-      // duplicateLineBindings
-      // (arrowBindings "move")
-      // {
-        i = ["insert_mode" "collapse_selection"];
-        v = "select_mode";
+    insert =
+      commonBindings
+      // disableModelessNavigationBindings
+      // duplicateLineBindings;
 
-        "0" = "goto_line_start";
-        "$" = "goto_line_end";
-        "^" = "goto_first_nonwhitespace";
+    normal =
+      commonBindings
+      // navigationBindings
+      // {
+        # Mode
+        a = ["append_mode" "collapse_selection"];
+        i = ["insert_mode" "collapse_selection"];
+        v = ["select_mode" "collapse_selection"];
+
+        # Navigation
         g.g = "goto_file_start";
         G = "goto_last_line";
+        ret = ["move_line_down" "goto_first_nonwhitespace"];
+        "%" = "match_brackets";
+
+        w = ["move_next_word_start" "move_char_right" "collapse_selection"];
+        W = ["move_next_long_word_start" "move_char_right" "collapse_selection"];
+        e = ["move_next_word_end" "collapse_selection"];
+        E = ["move_next_long_word_end" "collapse_selection"];
+        b = ["move_prev_word_start" "collapse_selection"];
+        B = ["move_prev_long_word_start" "collapse_selection"];
 
         "{" = "goto_next_paragraph";
         "}" = "goto_prev_paragraph";
 
-        esc = ["collapse_selection" "keep_primary_selection"];
-        "ret" = ["move_line_down" "goto_first_nonwhitespace"];
-
         tab = "move_parent_node_end";
         S-tab = "move_parent_node_start";
 
-        x = "delete_char_forward";
+        C-f = ["page_cursor_down" "align_view_center"];
+        C-b = ["page_cursor_up" "align_view_center"];
+        C-d = ["page_cursor_half_down" "align_view_center"];
+        C-u = ["page_cursor_half_up" "align_view_center"];
+
+        # Modification
         d = {
-          d = ["kill_to_line_end" "kill_to_line_start"];
+          d = ["extend_to_line_bounds" "delete_selection"];
+          s = "surround_delete";
           w = "delete_word_forward";
         };
         D = "delete_char_backward";
-
-        p = ":clipboard-paste-after";
-        Cmd-v = ":clipboard-paste-after";
-        y = ":clipboard-yank";
-        Cmd-c = ":clipboard-yank";
+        p = "paste_clipboard_after";
+        P = "paste_clipboard_before";
+        y = "yank_to_clipboard";
+        x = "delete_selection_noyank";
+        del = "delete_selection_noyank";
 
         C-h = "jump_view_left";
         C-j = "jump_view_down";
         C-k = "jump_view_up";
         C-l = "jump_view_right";
 
-        g.c = {
-          c = "toggle_line_comments";
-          b = "toggle_block_comments";
-        };
-
         space = {
-          f = {
-            f = "file_picker";
-            g = "global_search";
-            s = "symbol_picker";
-            j = "jumplist_picker";
-            b = "buffer_picker";
+          A-c = "no_op";
+          a = "no_op";
+          C = "no_op";
+          d = "no_op";
+          D = "no_op";
+          E = "no_op";
+          G = "no_op";
+          h = "no_op";
+          j = "no_op";
+          k = "no_op";
+          p = "no_op";
+          P = "no_op";
+          s = "no_op";
+          S = "no_op";
+          y = "no_op";
+          Y = "no_op";
+          "'" = "no_op";
+
+          space = "file_picker";
+          F = ":format";
+          q = ":quit-all";
+          r = "rename_symbol";
+          R = ":reload-all";
+          w = ":write-all!";
+          "/" = "global_search";
+          "?" = "command_palette";
+
+          b = {
+            d = ":buffer-close!";
+            o = ":buffer-close-others!";
           };
           c = {
             a = "code_action";
             d = "diagnostics_picker";
-            s = "signature_help";
-            f = ":format";
           };
-          t = {
-            t = "goto_definition";
+          f = {
+            b = "buffer_picker";
+            d = "diagnostics_picker";
+            D = "workspace_diagnostics_picker";
+            f = "file_picker";
+            g = "global_search";
+            j = "jumplist_picker";
+            s = "symbol_picker";
+            S = "workspace_symbol_picker";
+          };
+          g = {
+            d = "goto_definition";
             i = "goto_implementation";
             r = "goto_reference";
-            d = "goto_type_definition";
+            t = "goto_type_definition";
           };
-          b = {
-            n = "goto_next_buffer";
-            p = "goto_previous_buffer";
-            d = ":buffer-close!";
-            o = ":buffer-close-others!";
-          };
-
-          F = ":format";
-          Q = ":quit!";
-          R = ":reload-all";
-          W = ":write!";
         };
 
         "C-tab" = "goto_next_buffer";
         "C-S-tab" = "goto_previous_buffer";
 
-        Cmd-w = ":buffer-close";
+        Cmd-f = "search";
+        Cmd-F = "global_search"; # TODO: Find out why binding does not trigger command
+        Cmd-n = ":new";
         Cmd-s = ":write!";
-        Cmd-f = "global_search";
+        Cmd-w = ":buffer-close";
         Cmd-z = "undo";
         "Cmd-/" = "toggle_comments";
-      };
-
-    insert =
-      disableModelessNavigationBindings
-      // duplicateLineBindings
-      // {
-        Cmd-c = ["goto_line_start" "select_mode" "goto_line_end" ":clipboard-yank" "insert_mode"];
-        Cmd-x = ["goto_line_start" "select_mode" "goto_line_end" ":clipboard-yank" "delete_selection" "insert_mode"];
-        Cmd-v = ":clipboard-paste-before";
-      };
+      }
+      // moveLineBindings
+      // duplicateLineBindings;
 
     select =
-      (navigationBindings "extend")
-      // (arrowBindings "extend")
+      commonBindings
+      // navigationBindings
       // {
-        "0" = "goto_line_start";
+        # Navigation
         G = "goto_file_end";
+
+        w = "extend_next_word_start";
+        W = "extend_next_long_word_start";
+        e = "extend_next_word_end";
+        E = "extend_next_long_word_end";
+        b = "extend_prev_word_start";
+        B = "extend_prev_long_word_start";
 
         "{" = ["extend_to_line_bounds" "goto_prev_paragraph"];
         "}" = ["extend_to_line_bounds" "goto_next_paragraph"];
 
+        tab = "extend_parent_node_end";
+        S-tab = "extend_parent_node_start";
+
+        # Selection
+        a = "select_textobject_around";
+        i = "select_textobject_inner";
+        j = ["extend_line_down" "extend_to_line_bounds"];
+        k = ["extend_line_up" "extend_to_line_bounds"];
+        A-x = "extend_to_line_bounds";
+        X = ["extend_line_up" "extend_to_line_bounds"];
+
+        # Modification
+        d = ["yank_main_selection_to_clipboard" "delete_selection"];
+        p = "replace_selections_with_clipboard";
+        P = "paste_clipboard_before";
+        y = ["yank_main_selection_to_clipboard" "normal_mode" "flip_selections" "collapse_selection"];
+        Y = ["extend_to_line_bounds" "yank_main_selection_to_clipboard" "goto_line_start" "collapse_selection" "normal_mode"];
+        x = ["yank_main_selection_to_clipboard" "delete_selection"];
         del = "delete_selection_noyank";
 
-        "A-x" = "extend_to_line_bounds";
-        X = ["extend_line_up" "extend_to_line_bounds"];
-      };
+        S = "surround_add";
+      }
+      // disableModelessNavigationBindings;
   };
 }

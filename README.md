@@ -18,7 +18,7 @@
    </div>
 </h1>
 
-`inception` configuration for [Helix](https://helix-editor.com/) in [Nix](https://nixos.org/) using [Flakes]([https://](https://nixos.wiki/wiki/Flakes))
+`inception` configuration for [Helix](https://helix-editor.com/) in [Nix](https://nixos.org/) using [Flakes](https://nixos.wiki/wiki/Flakes)
 
 ## Installation
 
