@@ -84,9 +84,9 @@
 
     file-picker = {
       hidden = false;
-      git-ignore = false;
-      git-global = false;
-      git-exclude = false;
+      git-ignore = true;
+      git-global = true;
+      git-exclude = true;
       deduplicate-links = true;
     };
 
