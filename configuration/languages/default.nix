@@ -7,17 +7,17 @@
 in {
   language-server = {
     bash-language-server = {
-      command = getExe pkgs.bash-language-server;
+      command = "bash-language-server";
       args = ["start"];
       environment.SHELLCHECK_ARGUMENTS = "-e SC2164";
     };
     clangd = {
-      command = getExe' pkgs.clang-tools "clangd";
+      command = "clangd";
       args = ["--enable-config"];
       clangd.fallbackFlags = ["-std=c++2b"];
     };
     eslint = {
-      command = getExe' pkgs.nodePackages_latest.vscode-langservers-extracted "eslint-languageserver";
+      command = "eslint-languageserver";
       args = ["--stdio"];
       config = {
         codeAction = {
@@ -41,70 +41,59 @@ in {
       };
     };
     gopls = {
-      command = getExe pkgs.gopls;
+      command = "gopls";
       gofumpt = true;
       staticcheck = true;
       verboseOutput = true;
       completeUnimported = true;
-
       config = {
         analyses = {
           nilness = true;
           unusedparams = true;
           unusedwrite = true;
         };
-
         hints = {
-          constantValues = true;
-          parameterNames = true;
-          assignVariableType = true;
-          rangeVariableTypes = true;
+          assignVariableTypes = true;
           compositeLiteralTypes = true;
           compositeLiteralFields = true;
+          constantValues = true;
           functionTypeParameters = true;
+          parameterNames = true;
+          rangeVariableTypes = true;
         };
       };
     };
-    html = {
-      command = getExe' pkgs.nodePackages_latest.vscode-langservers-extracted "html-languageserver";
-      args = ["--stdio"];
-      config.provideFormatter = true;
-    };
-    json = {
-      command = getExe pkgs.nodePackages_latest.vscode-json-languageserver;
-      args = ["--stdio"];
-      config.provideFormatter = true;
-    };
     marksman = {
-      command = getExe pkgs.marksman;
+      command = "marksman";
+      args = ["server"];
     };
     nixd = {
-      command = getExe pkgs.nixd;
+      command = "nixd";
+      nixpkgs = {
+        expr = "import <nixpkgs> {}";
+      };
     };
     nil = {
-      command = getExe pkgs.nil;
+      command = "nil";
       args = ["--stdio"];
       config.nil = {
         formatter.command = [
-          "${getExe pkgs.alejandra}"
+          "alejandra"
           "-q"
         ];
         nix.flake.autoEvalInputs = true;
       };
     };
     pylsp = {
-      command = getExe' pkgs.python312Packages.python-lsp-server "pylsp";
-      formatter = {
-        command = getExe pkgs.python312Packages.black;
-      };
+      command = "pylsp";
     };
     pyright = {
-      command = getExe' pkgs.pyright "pyright-langserver";
+      command = "pyright-langserver";
       args = ["--stdio"];
     };
-    ruff-lsp = {
-      command = "ruff-lsp";
-      args = [];
+    ruff = {
+      command = "ruff";
+      args = ["server"];
       config.settings = {
         args = "--preview";
         run = "onSave";
@@ -129,10 +118,14 @@ in {
           excludeDirs = ["node_modules"];
         };
         inlayHints = {
-          maxLength = 25;
-          discriminantHints.enable = true;
-          closureReturnTypeHints.enable = true;
+          bindingModeHints.enable = false;
+          closingBraceHints.minLines = 10;
+          closureReturnTypeHints.enable = "with_block";
           closureCaptureHints.enable = true;
+          discriminantHints.enable = "fieldless";
+          lifetimeElisionHints.enable = "skip_trivial";
+          maxLength = 25;
+          typeHints.hideClosureInitialization = false;
         };
         lens = {
           references = true;
@@ -141,11 +134,19 @@ in {
         procMacro.enable = true;
       };
     };
+    tailwindcss-ls = {
+      args = ["--stdio"];
+      config.userLanguages = {
+        rust = "html";
+        "*.rs" = "html";
+      };
+    };
     taplo = {
-      command = getExe pkgs.taplo;
+      command = "taplo";
+      args = ["lsp" "stdio"];
     };
     typescript-language-server = {
-      command = getExe pkgs.nodePackages_latest.typescript-language-server;
+      command = "typescript-language-server";
       args = ["--stdio"];
       config = let
         inlayHints = {
@@ -285,7 +286,6 @@ in {
           formatter = {
             command = getExe pkgs.alejandra;
           };
-          language-servers = ["nil" "nixd"];
           roots = ["flake.nix"];
         };
       python =
