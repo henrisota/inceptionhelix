@@ -1,8 +1,4 @@
-{
-  lib,
-  pkgs,
-  ...
-}: let
+{lib, ...}: let
   inherit (lib) getExe getExe';
 in {
   language-server = {
@@ -203,7 +199,7 @@ in {
         common
         // {
           formatter = {
-            command = getExe pkgs.shfmt;
+            command = "shfmt";
             args = [
               "--posix"
               "--apply-ignore"
@@ -219,7 +215,7 @@ in {
         common
         // {
           formatter = {
-            command = getExe pkgs.nodePackages_latest.prettier;
+            command = "prettier";
             args = ["--parser" "css"];
           };
         };
@@ -239,7 +235,7 @@ in {
         common
         // {
           formatter = {
-            command = getExe pkgs.nodePackages_latest.prettier;
+            command = "prettier";
             args = ["--parser" "html"];
           };
         };
@@ -253,19 +249,18 @@ in {
         common
         // {
           formatter = {
-            command = getExe pkgs.nodePackages_latest.prettier;
+            command = "prettier";
             args = ["--parser" "typescript"];
           };
           language-servers = [
             "typescript-language-server"
-            "eslint"
           ];
         };
       json =
         common
         // {
           formatter = {
-            command = getExe pkgs.nodePackages_latest.prettier;
+            command = "prettier";
             args = ["--parser" "json"];
           };
           language-servers = ["json"];
@@ -274,7 +269,7 @@ in {
         common
         // {
           formatter = {
-            command = getExe pkgs.nodePackages_latest.prettier;
+            command = "prettier";
             args = ["--parser" "markdown" "--prose-wrap" "never"];
           };
           language-servers = ["marksman"];
@@ -284,7 +279,7 @@ in {
         // {
           file-types = ["nix"];
           formatter = {
-            command = getExe pkgs.alejandra;
+            command = "alejandra";
           };
           roots = ["flake.nix"];
         };
@@ -296,8 +291,7 @@ in {
             command = "ruff";
             args = ["format" "-"];
           };
-          language-servers = ["pyright"];
-          roots = ["pyproject.toml" "setup.py" "Poetry.lock"];
+          language-servers = ["ruff" "pyright"];
         };
       rust =
         common
@@ -308,7 +302,7 @@ in {
         common
         // {
           formatter = {
-            command = getExe pkgs.nodePackages_latest.prettier;
+            command = "prettier";
             args = ["--parser" "scss"];
           };
         };
@@ -316,18 +310,16 @@ in {
         common
         // {
           formatter = {
-            command = getExe pkgs.taplo;
+            command = "taplo";
             args = ["format" "-"];
           };
           language-servers = ["taplo"];
         };
       typescript = {
-        file-types = ["ts" "mts" "cts"];
         formatter = {
-          command = getExe pkgs.nodePackages_latest.prettier;
+          command = "prettier";
           args = ["--parser" "typescript"];
         };
-        injection-regex = "(ts|typescript)";
         language-servers = [
           {
             name = "typescript-language-server";
@@ -338,37 +330,6 @@ in {
             only-features = ["format"];
           }
         ];
-        roots = [];
-        shebangs = [];
       };
     };
 }
-# [[language]]
-# name = "json"
-# formatter = { command = 'prettier', args = ["--parser", "json"] }
-# auto-format = true
-# [[language]]
-# name = "css"
-# formatter = { command = 'prettier', args = ["--parser", "css"] }
-# auto-format = true
-# [[language]]
-# name = "javascript"
-# formatter = { command = 'prettier', args = ["--parser", "typescript"] }
-# auto-format = true
-# [[language]]
-# name = "typescript"
-# formatter = { command = 'prettier', args = ["--parser", "typescript"] }
-# auto-format = true
-# [[language]]
-# name = "markdown"
-# formatter = { command = 'prettier', args = ["--parser", "markdown"] }
-# auto-format = true
-# [[language]]
-# name = "hcl"
-# formatter = { command = 'terraform', args = ["fmt", "-"] }
-# auto-format = true
-# [[language]]
-# name = "tfvars"
-# formatter = { command = 'terraform', args = ["fmt", "-"] }
-# auto-format = true
-
