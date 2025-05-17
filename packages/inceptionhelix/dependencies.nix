@@ -47,7 +47,6 @@ with pkgs; let
     # Python
     pyright
     ruff
-    ruff-lsp
     # Rust
     rust-analyzer
     # Terraform
