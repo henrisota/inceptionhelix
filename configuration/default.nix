@@ -71,7 +71,7 @@
     statusline = {
       left = ["mode" "separator" "version-control" "separator" "file-name" "separator" "spinner" "separator" "diagnostics"];
       center = [];
-      right = ["selections" "position" "file-encoding" "file-line-ending" "file-type"];
+      right = ["selections" "primary-selection-length" "position" "file-encoding" "file-line-ending" "file-type"];
       separator = " ";
       mode = {
         normal = "NORMAL";
