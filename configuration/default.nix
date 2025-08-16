@@ -39,6 +39,14 @@
     };
     cursorcolumn = false;
 
+    auto-save = {
+      focus-lost = true;
+      after-delay = {
+        enable = true;
+        timeout = 1000;
+      };
+    };
+
     idle-timeout = 100;
 
     auto-info = true;
