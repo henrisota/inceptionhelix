@@ -1,16 +1,23 @@
-{lib, ...}: let
+{
+  lib,
+  pkgs,
+  ...
+}: let
   inherit (lib) getExe getExe';
 in {
   language-server = {
     bash-language-server = {
-      command = "bash-language-server";
+      command = getExe pkgs.bash-language-server;
       args = ["start"];
       environment.SHELLCHECK_ARGUMENTS = "-e SC2164";
     };
     clangd = {
-      command = "clangd";
+      command = getExe' pkgs.clang-tools "clangd";
       args = ["--enable-config"];
       clangd.fallbackFlags = ["-std=c++2b"];
+    };
+    cmake-language-server = {
+      command = getExe pkgs.cmake-language-server;
     };
     eslint = {
       command = "eslint-languageserver";
@@ -37,7 +44,7 @@ in {
       };
     };
     gopls = {
-      command = "gopls";
+      command = getExe pkgs.gopls;
       gofumpt = true;
       staticcheck = true;
       verboseOutput = true;
@@ -59,22 +66,18 @@ in {
         };
       };
     };
-    marksman = {
-      command = "marksman";
-      args = ["server"];
-    };
     nixd = {
-      command = "nixd";
+      command = getExe pkgs.nixd;
       nixpkgs = {
         expr = "import <nixpkgs> {}";
       };
     };
     nil = {
-      command = "nil";
+      command = getExe pkgs.nil;
       args = ["--stdio"];
       config.nil = {
         formatter.command = [
-          "alejandra"
+          (getExe pkgs.alejandra)
           "-q"
         ];
         nix.flake.autoEvalInputs = true;
@@ -88,7 +91,7 @@ in {
       args = ["--stdio"];
     };
     ruff = {
-      command = "ruff";
+      command = getExe pkgs.ruff;
       args = ["server"];
       config.settings = {
         args = "--preview";
@@ -131,6 +134,7 @@ in {
       };
     };
     tailwindcss-ls = {
+      command = getExe pkgs.tailwindcss-language-server;
       args = ["--stdio"];
       config.userLanguages = {
         rust = "html";
@@ -138,11 +142,11 @@ in {
       };
     };
     taplo = {
-      command = "taplo";
+      command = getExe pkgs.taplo;
       args = ["lsp" "stdio"];
     };
     typescript-language-server = {
-      command = "typescript-language-server";
+      command = getExe pkgs.nodePackages.typescript-language-server;
       args = ["--stdio"];
       config = let
         inlayHints = {
@@ -175,6 +179,15 @@ in {
         };
       };
     };
+    vscode-css-language-server = {
+      command = getExe' pkgs.nodePackages.vscode-langservers-extracted "vscode-css-language-server";
+      args = ["--stdio"];
+      config = {
+        provideFormatter = true;
+        css.validate.enable = true;
+        scss.validate.enable = true;
+      };
+    };
   };
 
   language = let
@@ -193,13 +206,17 @@ in {
         unit = "  ";
       };
     };
+    prettier = language: overrides: {
+      command = getExe pkgs.nodePackages.prettier;
+      args = ["--parser" language] ++ (overrides.args or []);
+    };
   in
     lib.mapAttrsToList (name: value: value // {inherit name;}) {
       bash =
         common
         // {
           formatter = {
-            command = "shfmt";
+            command = getExe pkgs.shfmt;
             args = [
               "--posix"
               "--apply-ignore"
@@ -214,10 +231,8 @@ in {
       css =
         common
         // {
-          formatter = {
-            command = "prettier";
-            args = ["--parser" "css"];
-          };
+          formatter = prettier "css" {};
+          language-servers = ["vscode-css-language-server" "tailwindcss-ls"];
         };
       git-commit =
         common
@@ -234,10 +249,8 @@ in {
       html =
         common
         // {
-          formatter = {
-            command = "prettier";
-            args = ["--parser" "html"];
-          };
+          formatter = prettier "html" {};
+          language-servers = ["vscode-html-language-server" "superhtml" "tailwindcss-ls"];
         };
       hyprlang = {
         file-types = [
@@ -248,10 +261,7 @@ in {
       javascript =
         common
         // {
-          formatter = {
-            command = "prettier";
-            args = ["--parser" "typescript"];
-          };
+          formatter = prettier "typescript" {};
           language-servers = [
             "typescript-language-server"
           ];
@@ -259,20 +269,12 @@ in {
       json =
         common
         // {
-          formatter = {
-            command = "prettier";
-            args = ["--parser" "json"];
-          };
-          language-servers = ["json"];
+          formatter = prettier "json" {};
         };
       markdown =
         common
         // {
-          formatter = {
-            command = "prettier";
-            args = ["--parser" "markdown" "--prose-wrap" "never"];
-          };
-          language-servers = ["marksman"];
+          formatter = prettier "markdown" {args = ["--prose-wrap" "never"];};
         };
       nix =
         common
@@ -282,6 +284,7 @@ in {
             command = "alejandra";
           };
           roots = ["flake.nix"];
+          language-servers = ["nil" "nixd"];
         };
       python =
         common
@@ -301,10 +304,8 @@ in {
       scss =
         common
         // {
-          formatter = {
-            command = "prettier";
-            args = ["--parser" "scss"];
-          };
+          formatter = prettier "scss" {};
+          language-servers = ["vscode-css-language-server" "tailwindcss-ls"];
         };
       toml =
         common
@@ -316,10 +317,7 @@ in {
           language-servers = ["taplo"];
         };
       typescript = {
-        formatter = {
-          command = "prettier";
-          args = ["--parser" "typescript"];
-        };
+        formatter = prettier "typescript" {};
         language-servers = [
           {
             name = "typescript-language-server";
