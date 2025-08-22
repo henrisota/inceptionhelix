@@ -199,8 +199,7 @@
     };
   in {
     insert =
-      commonBindings
-      // disableModelessNavigationBindings
+      disableModelessNavigationBindings
       // duplicateLineBindings;
 
     normal =
