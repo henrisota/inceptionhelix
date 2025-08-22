@@ -322,8 +322,7 @@
       // duplicateLineBindings;
 
     select =
-      commonBindings
-      // navigationBindings
+      navigationBindings
       // {
         # Navigation
         G = "goto_file_end";
