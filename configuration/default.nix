@@ -91,7 +91,7 @@
     auto-pairs = true;
 
     file-picker = {
-      hidden = false;
+      hidden = true;
       git-ignore = true;
       git-global = true;
       git-exclude = true;
