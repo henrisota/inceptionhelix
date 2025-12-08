@@ -1,11 +1,10 @@
 {
   lib,
   inputs,
-  system,
   pkgs,
   ...
 } @ args: let
-  package = inputs.helix.packages.${system}.default;
+  package = inputs.helix.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   dependencies = import ./dependencies.nix args;
   configuration = import ../../configuration/default.nix args;
