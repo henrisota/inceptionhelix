@@ -25,7 +25,7 @@ with pkgs; let
     clang-tools
     cmake-language-server
     # Dockerfile
-    dockerfile-language-server-nodejs
+    dockerfile-language-server
     # Go
     gopls
     golangci-lint-langserver
