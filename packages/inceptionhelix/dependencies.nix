@@ -20,7 +20,7 @@ with pkgs; let
 
   languageServers = [
     # Bash
-    nodePackages_latest.bash-language-server
+    bash-language-server
     # C / C++
     clang-tools
     cmake-language-server
@@ -34,7 +34,7 @@ with pkgs; let
     # Java
     jdt-language-server
     # JSON
-    nodePackages_latest.vscode-json-languageserver
+    vscode-json-languageserver
     # Kotlin
     kotlin-language-server
     # Lua
@@ -54,7 +54,7 @@ with pkgs; let
     # TOML
     taplo
     # TypeScript
-    nodePackages_latest.typescript-language-server
+    typescript-language-server
     # YAML
     yaml-language-server
   ];

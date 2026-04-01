@@ -146,7 +146,7 @@ in {
       args = ["lsp" "stdio"];
     };
     typescript-language-server = {
-      command = getExe pkgs.nodePackages.typescript-language-server;
+      command = getExe pkgs.typescript-language-server;
       args = ["--stdio"];
       config = let
         inlayHints = {
@@ -180,7 +180,7 @@ in {
       };
     };
     vscode-css-language-server = {
-      command = getExe' pkgs.nodePackages.vscode-langservers-extracted "vscode-css-language-server";
+      command = getExe' pkgs.vscode-langservers-extracted "vscode-css-language-server";
       args = ["--stdio"];
       config = {
         provideFormatter = true;
@@ -207,7 +207,7 @@ in {
       };
     };
     prettier = language: overrides: {
-      command = getExe pkgs.nodePackages.prettier;
+      command = getExe pkgs.prettier;
       args = ["--parser" language] ++ (overrides.args or []);
     };
   in
