@@ -4,7 +4,7 @@
   pkgs,
   ...
 } @ args: let
-  package = inputs.helix.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  package = pkgs.helix;
 
   dependencies = import ./dependencies.nix args;
   configuration = import ../../configuration/default.nix args;
