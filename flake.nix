@@ -3,45 +3,29 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-compat.url = "github:edolstra/flake-compat";
-    snowfall = {
-      url = "github:snowfallorg/lib";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.nixpkgs.follows = "nixpkgs";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
     };
   };
 
-  outputs = inputs: let
-    lib = inputs.snowfall.mkLib {
-      inherit inputs;
-      src = ./.;
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["aarch64-darwin" "x86_64-linux"];
 
-      snowfall = {
-        root = ./.;
-        namespace = "flak";
-        meta = {
-          name = "flak";
-          title = "flak";
+      perSystem = {system, ...}: let
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
         };
-      };
-    };
-  in
-    lib.mkFlake {
-      inherit inputs;
-      src = ./.;
+      in {
+        _module.args.pkgs = pkgs;
 
-      alias = {
-        packages = {
-          default = "inceptionhelix";
+        packages.default = pkgs.callPackage ./packages/inceptionhelix {
+          inherit inputs;
         };
-      };
 
-      package-namespace = "flak";
-      channels-config = {
-        allowUnfree = true;
-      };
-      outputs-builder = channels: {
-        formatter = channels.nixpkgs.alejandra;
+        formatter = pkgs.alejandra;
       };
     };
 }
