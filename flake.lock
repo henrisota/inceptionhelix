@@ -20,6 +20,30 @@
         "type": "github"
       }
     },
+    "inceptionlsp": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786995458,
+        "narHash": "sha256-6FptplIRmXdrCjl2ZIfJUnoyWNQOqWP8R+KCTZfRTD0=",
+        "owner": "henrisota",
+        "repo": "inceptionlsp",
+        "rev": "14f9212c0e71d4f4011dfd9ff921443b670fb23d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "henrisota",
+        "ref": "genesis",
+        "repo": "inceptionlsp",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1785747939,
@@ -39,6 +63,7 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
+        "inceptionlsp": "inceptionlsp",
         "nixpkgs": "nixpkgs"
       }
     }

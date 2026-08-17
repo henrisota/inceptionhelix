@@ -1,194 +1,27 @@
 {
   lib,
   pkgs,
+  inputs,
   ...
 }: let
-  inherit (lib) getExe getExe';
+  inherit (lib) getExe;
+
+  lsp = inputs.inceptionlsp.lib;
 in {
-  language-server = {
-    bash-language-server = {
-      command = getExe pkgs.bash-language-server;
-      args = ["start"];
-      environment.SHELLCHECK_ARGUMENTS = "-e SC2164";
-    };
-    clangd = {
-      command = getExe' pkgs.clang-tools "clangd";
-      args = ["--enable-config"];
-      clangd.fallbackFlags = ["-std=c++2b"];
-    };
-    cmake-language-server = {
-      command = getExe pkgs.cmake-language-server;
-    };
-    eslint = {
-      command = "eslint-languageserver";
-      args = ["--stdio"];
-      config = {
-        codeAction = {
-          disableRuleComment = {
-            enable = true;
-            location = "separateLine";
-          };
-          mode = "all";
-          showDocumentation.enable = true;
-        };
-        experimental = {};
-        format = false;
-        nodePath = "";
-        onIgnoredFiles = "off";
-        packageManages = "npm";
-        problems.shortenToSingleLine = false;
-        run = "onType";
-        useESLintClass = false;
-        validate = "on";
-        workingDirectory.mode = "auto";
-      };
-    };
-    gopls = {
-      command = getExe pkgs.gopls;
-      gofumpt = true;
-      staticcheck = true;
-      verboseOutput = true;
-      completeUnimported = true;
-      config = {
-        analyses = {
-          nilness = true;
-          unusedparams = true;
-          unusedwrite = true;
-        };
-        hints = {
-          assignVariableTypes = true;
-          compositeLiteralTypes = true;
-          compositeLiteralFields = true;
-          constantValues = true;
-          functionTypeParameters = true;
-          parameterNames = true;
-          rangeVariableTypes = true;
-        };
-      };
-    };
-    nixd = {
-      command = getExe pkgs.nixd;
-      nixpkgs = {
-        expr = "import <nixpkgs> {}";
-      };
-    };
-    nil = {
-      command = getExe pkgs.nil;
-      args = ["--stdio"];
-      config.nil = {
-        formatter.command = [
-          (getExe pkgs.alejandra)
-          "-q"
-        ];
-        nix.flake.autoEvalInputs = true;
-      };
-    };
-    pylsp = {
-      command = "pylsp";
-    };
-    pyright = {
-      command = "pyright-langserver";
-      args = ["--stdio"];
-    };
-    ruff = {
-      command = getExe pkgs.ruff;
-      args = ["server"];
-      config.settings = {
-        args = "--preview";
-        run = "onSave";
-      };
-    };
-    rust-analyzer = {
-      config = {
-        cachePriming.enable = false;
-        cargo = {
-          buildScripts.enable = true;
-          loadOutDirsFromCheck = true;
-        };
-        check.command = "clippy";
-        checkOnSave.command = "clippy";
-        completion.autoimport.enable = true;
-        diagnostics = {
-          disabled = ["unresolved-proc-macro"];
-          experimental.enable = true;
-        };
-        experimental.procAttrMacros = true;
-        files = {
-          excludeDirs = ["node_modules"];
-        };
-        inlayHints = {
-          bindingModeHints.enable = false;
-          closingBraceHints.minLines = 10;
-          closureReturnTypeHints.enable = "with_block";
-          closureCaptureHints.enable = true;
-          discriminantHints.enable = "fieldless";
-          lifetimeElisionHints.enable = "skip_trivial";
-          maxLength = 25;
-          typeHints.hideClosureInitialization = false;
-        };
-        lens = {
-          references = true;
-          methodReferences = true;
-        };
-        procMacro.enable = true;
-      };
-    };
-    tailwindcss-ls = {
-      command = getExe pkgs.tailwindcss-language-server;
-      args = ["--stdio"];
-      config.userLanguages = {
-        rust = "html";
-        "*.rs" = "html";
-      };
-    };
-    taplo = {
-      command = getExe pkgs.taplo;
-      args = ["lsp" "stdio"];
-    };
-    typescript-language-server = {
-      command = getExe pkgs.typescript-language-server;
-      args = ["--stdio"];
-      config = let
-        inlayHints = {
-          includeInlayEnumMemberValueHints = true;
-          includeInlayFunctionLikeReturnTypeHints = true;
-          includeInlayFunctionParameterTypeHints = true;
-          includeInlayParameterNameHints = "all";
-          includeInlayParameterNameHintsWhenArgumentMatchesName = true;
-          includeInlayPropertyDeclarationTypeHints = true;
-          includeInlayVariableTypeHints = true;
-        };
-      in {
-        hostInfo = "helix";
-
-        typescript-language-server.source = {
-          addMissingImports.ts = true;
-          fixAll.ts = true;
-          organizeImports.ts = false;
-          removeUnusedImports.ts = true;
-          sortImports.ts = true;
-        };
-
-        format.semicolons = "insert";
-
-        typescript = {
-          inherit inlayHints;
-        };
-        javascript = {
-          inherit inlayHints;
-        };
-      };
-    };
-    vscode-css-language-server = {
-      command = getExe' pkgs.vscode-langservers-extracted "vscode-css-language-server";
-      args = ["--stdio"];
-      config = {
-        provideFormatter = true;
-        css.validate.enable = true;
-        scss.validate.enable = true;
-      };
-    };
-  };
+  language-server = lsp.toHelix pkgs [
+    "gopls"
+    "nil"
+    "nixd"
+    "pyright"
+    "ruff"
+    "rust-analyzer"
+    "superhtml"
+    "tailwindcss-ls"
+    "taplo"
+    "typescript-language-server"
+    "vscode-css-language-server"
+    "vscode-html-language-server"
+  ];
 
   language = let
     common = {
