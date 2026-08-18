@@ -26,4 +26,9 @@ in
         --set XDG_CONFIG_HOME "$out/config" \
         --prefix PATH : ${pkgs.lib.makeBinPath dependencies}
     '';
+
+    meta = {
+      inherit (package.meta) description homepage license;
+      mainProgram = "hx";
+    };
   }
