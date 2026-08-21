@@ -15,6 +15,7 @@ in {
     "pyright"
     "ruff"
     "rust-analyzer"
+    "sqls"
     "superhtml"
     "tailwindcss-ls"
     "taplo"
@@ -139,6 +140,15 @@ in {
         // {
           formatter = prettier "scss" {};
           language-servers = ["vscode-css-language-server" "tailwindcss-ls"];
+        };
+      sql =
+        common
+        // {
+          formatter = {
+            command = getExe pkgs.sqlfluff;
+            args = ["format" "--dialect" "ansi" "-"];
+          };
+          language-servers = ["sqls"];
         };
       toml =
         common
