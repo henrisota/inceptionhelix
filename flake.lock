@@ -30,11 +30,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786995458,
-        "narHash": "sha256-6FptplIRmXdrCjl2ZIfJUnoyWNQOqWP8R+KCTZfRTD0=",
+        "lastModified": 1787350084,
+        "narHash": "sha256-O2LV29GtNaoHg65+wGLqUtGpeOSMhddbw0ou5INIMgI=",
         "owner": "henrisota",
         "repo": "inceptionlsp",
-        "rev": "14f9212c0e71d4f4011dfd9ff921443b670fb23d",
+        "rev": "1e93291970544a5e3ee84a038f6b8d839115969b",
         "type": "github"
       },
       "original": {
